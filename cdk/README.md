@@ -9,6 +9,6 @@
 * Synthesizes and prints the CloudFormation template for this stack
   `cdk synth --json --profile myAWS`
 * Deploy  
-  `cdk deploy --require-approval never --profile myAWS`
+  `cdk deploy --profile myAWS` or `cdk deploy --profile myAWS --all`
 * Teardown  
   `cdk destroy --profile myAWS`
