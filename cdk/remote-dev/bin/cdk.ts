@@ -26,4 +26,7 @@ cdk.Tags.of(stack).add('env', 'dev');
 cdk.Tags.of(stack).add('region', 'hq');
 cdk.Tags.of(stack).add('div', 'ki1000');
 cdk.Tags.of(stack).add('dept', 'ki1040');
+cdk.Tags.of(stack).add('owner', process.env.username!);
+cdk.Tags.of(stack).add('map-migrated', process.env.MAP_MIGRATED!);
+cdk.Tags.of(stack).add('aws-migration-project-id', process.env.AWS_MIGRATION_PROJECT_ID!);
 cdk.Tags.of(stack).add('deploy', 'cdk');
