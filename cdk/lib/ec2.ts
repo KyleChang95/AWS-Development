@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
-export class Stack extends cdk.Stack {
+export class EC2Stack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -12,21 +12,23 @@ export class Stack extends cdk.Stack {
     const amiId: string = props!.tags!['amiId'];
     const keyPairName: string = props!.tags!['keyPairName'];
   
-    // Search VPC by VPC ID
+    // Search VPC by VPC ID.
     const vpc = ec2.Vpc.fromLookup(this, 'getVPC', { vpcId });
 
-    // Setup AMI MAP
+    // Setup AMI MAP.
+    //  * Description  : Amazon Linux 2023 AMI 2023.1.20230906.1 x86_64 HVM kernel-6.1
+    //  * Architecture : 64-bit (x86)
     const amiMap: Record<string, string> = {}
     amiMap[awsRegion] = amiId
 
-    // Create Security Group
+    // Create Security Group.
     const securityGroup = new ec2.SecurityGroup(this, 'createSecurityGroup', {
       securityGroupName: stackName + '-security-group',
       vpc: vpc,
       allowAllOutbound: true,
     });
 
-    // Add SSH, HTTP, HTTPS access
+    // Allow SSH, HTTP, HTTPS access from anywhere.
     [
       { port: 22, name: 'SSH' },
       { port: 80, name: 'HTTP' },
@@ -40,37 +42,33 @@ export class Stack extends cdk.Stack {
     });
 
     // Setup root volume
+    //  * Size                : 30GB
+    //  * Type                : GP3
+    //  * DeleteOnTermination : false
     const volume: ec2.BlockDevice = {
-      deviceName: '/dev/sda1',
-      volume: ec2.BlockDeviceVolume.ebs(100, {
-        deleteOnTermination: true,
+      deviceName: '/dev/xvda',
+      volume: ec2.BlockDeviceVolume.ebs(30, {
+        deleteOnTermination: false,
         encrypted: true,
-        volumeType: ec2.EbsDeviceVolumeType.GP3,
-      }),
+        volumeType: ec2.EbsDeviceVolumeType.GP3
+      })
     };
 
-    /**
-     * Create EC2 Instance with following specs: 
-     * 
-     * - Instance Type  : t3.large 
-     * - CPU            : 2
-     * - Memory         : 8GB
-     * - Architecture   : x86_64
-     * - Storage        : 100GB
-     * - Volume Type    : GP3
-     * - OS             : Ubuntu 22.04 LTS
-     */
+    // Create EC2 Instance with following specs: 
+    //  * OS             : AWS Linux 2023 AMI (64-bit, x86)
+    //  * Instance Type  : t2.micro (1 vCPU, 1 GB Memory)
+    //  * Storage        : 30GB (GP3, deleteOnTermination: false)
     new ec2.Instance(this, 'createInstance', {
       instanceName: stackName,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
       machineImage: ec2.MachineImage.genericLinux(amiMap),
-      vpc: vpc,
-      vpcSubnets: { subnets: vpc.publicSubnets },
-      securityGroup: securityGroup,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
       keyName: keyPairName,
-      ssmSessionPermissions: true,
-      blockDevices: [volume],
+      vpc: vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       associatePublicIpAddress: true,
+      securityGroup: securityGroup,
+      blockDevices: [volume],
+      ssmSessionPermissions: true,
     });
   }
 }
