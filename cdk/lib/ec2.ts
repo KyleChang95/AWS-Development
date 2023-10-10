@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { readFileSync } from 'fs';
 
 export class EC2Stack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -10,10 +11,22 @@ export class EC2Stack extends cdk.Stack {
     const awsRegion: string = props!.env!.region!;
     const vpcId: string = props!.tags!['vpcId'];
     const amiId: string = props!.tags!['amiId'];
-    const keyPairName: string = props!.tags!['keyPairName'];
+
+    // Upload keypair to AWS.
+    const keypair = new ec2.CfnKeyPair(this, 'uploadKeyPair', {
+      keyName: stackName,
+      keyType: 'ED25519',
+      publicKeyMaterial: readFileSync('~/.ssh/id_ed25519.pub', 'utf8')
+    });
   
     // Search VPC by VPC ID.
     const vpc = ec2.Vpc.fromLookup(this, 'getVPC', { vpcId });
+
+    // Setup Subnet Selection.
+    const SubnetSelection: ec2.SubnetSelection = {
+      subnetType: ec2.SubnetType.PUBLIC,
+      availabilityZones: [awsRegion + 'a']
+    };
 
     // Setup AMI MAP.
     //  * Description  : Amazon Linux 2023 AMI 2023.1.20230906.1 x86_64 HVM kernel-6.1
@@ -23,7 +36,7 @@ export class EC2Stack extends cdk.Stack {
 
     // Create Security Group.
     const securityGroup = new ec2.SecurityGroup(this, 'createSecurityGroup', {
-      securityGroupName: stackName + '-security-group',
+      securityGroupName: stackName,
       vpc: vpc,
       allowAllOutbound: true,
     });
@@ -45,30 +58,35 @@ export class EC2Stack extends cdk.Stack {
     //  * Size                : 30GB
     //  * Type                : GP3
     //  * DeleteOnTermination : false
-    const volume: ec2.BlockDevice = {
-      deviceName: '/dev/xvda',
-      volume: ec2.BlockDeviceVolume.ebs(30, {
-        deleteOnTermination: false,
-        encrypted: true,
-        volumeType: ec2.EbsDeviceVolumeType.GP3
-      })
-    };
+    // const volume: ec2.BlockDevice = {
+    //   deviceName: '/dev/xvda',
+    //   volume: ec2.BlockDeviceVolume.ebs(30, {
+    //     deleteOnTermination: false,
+    //     encrypted: true,
+    //     volumeType: ec2.EbsDeviceVolumeType.GP3
+    //   })
+    // };
 
     // Create EC2 Instance with following specs: 
     //  * OS             : AWS Linux 2023 AMI (64-bit, x86)
     //  * Instance Type  : t2.micro (1 vCPU, 1 GB Memory)
     //  * Storage        : 30GB (GP3, deleteOnTermination: false)
-    new ec2.Instance(this, 'createInstance', {
+    const instance = new ec2.Instance(this, 'createInstance', {
       instanceName: stackName,
       machineImage: ec2.MachineImage.genericLinux(amiMap),
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
-      keyName: keyPairName,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
+      keyName: stackName,
       vpc: vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      vpcSubnets: SubnetSelection,
       associatePublicIpAddress: true,
       securityGroup: securityGroup,
-      blockDevices: [volume],
+      // blockDevices: [volume],
       ssmSessionPermissions: true,
+    });
+
+    // Print instance public IP.
+    new cdk.CfnOutput(this, 'printPublicIP', {
+      value: instance.instancePublicIp,
     });
   }
 }
