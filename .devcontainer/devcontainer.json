@@ -1,11 +1,22 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "image": "node:18",
   "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "18"
-    },
-    "ghcr.io/devcontainers-contrib/features/ts-node:1": {},
     "ghcr.io/devcontainers/features/aws-cli:1": {},
     "ghcr.io/devcontainers-contrib/features/aws-cdk:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ryanluker.vscode-coverage-gutters",
+        "dbaeumer.vscode-eslint",
+        "mhutchie.git-graph",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "GitHub.copilot-labs",
+        "ms-vscode.live-server",
+        "yzhang.markdown-all-in-one",
+        "alefragnani.project-manager"
+      ]
+    }
   }
 }
