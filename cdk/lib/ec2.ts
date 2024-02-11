@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { readFileSync } from 'fs';
 
 export class EC2Stack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -11,13 +10,6 @@ export class EC2Stack extends cdk.Stack {
     const awsRegion: string = props!.env!.region!;
     const vpcId: string = props!.tags!['vpcId'];
     const amiId: string = props!.tags!['amiId'];
-
-    // Upload keypair to AWS.
-    const keypair = new ec2.CfnKeyPair(this, 'uploadKeyPair', {
-      keyName: stackName,
-      keyType: 'ED25519',
-      publicKeyMaterial: readFileSync('~/.ssh/id_ed25519.pub', 'utf8')
-    });
   
     // Search VPC by VPC ID.
     const vpc = ec2.Vpc.fromLookup(this, 'getVPC', { vpcId });
@@ -75,7 +67,7 @@ export class EC2Stack extends cdk.Stack {
       instanceName: stackName,
       machineImage: ec2.MachineImage.genericLinux(amiMap),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
-      keyName: stackName,
+      keyName: 'ims-dev',
       vpc: vpc,
       vpcSubnets: SubnetSelection,
       associatePublicIpAddress: true,
