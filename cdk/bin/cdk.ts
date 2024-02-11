@@ -10,11 +10,11 @@ const stack = new EC2Stack(app, 'createEc2Stack', {
   stackName: 'kyle-dev',
   env: {
     account: process.env.AWS_ACCOUNT_ID,
-    region: process.env.AWS_REGION
+    region: 'us-west-2'
   },
   tags: {
-    vpcId: process.env.AWS_VPC_ID!,
-    amiId: process.env.AWS_AMI_ID!,
+    vpcId: 'vpc-04da342fb999000d5',
+    amiId: 'ami-008fe2fc65df48dac',
   }
 });
 
