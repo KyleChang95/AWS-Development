@@ -6,9 +6,9 @@ ARG AWS_SECRET_ACCESS_KEY
 
 RUN npm install -g aws-cdk
 
-WORKDIR /cdk
+ADD . /aws/
 
-ADD . /cdk/
+WORKDIR /aws/cdk
 
 RUN npm install
 
