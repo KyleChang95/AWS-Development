@@ -6,6 +6,7 @@ ARG AWS_SECRET_ACCESS_KEY
 
 RUN apt update
 RUN apt install -y python3-pip
+RUN pip3 install --upgrade pip
 RUN pip3 install awscli
 RUN npm install -g aws-cdk
 
