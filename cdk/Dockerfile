@@ -14,4 +14,4 @@ RUN npm install
 
 RUN cdk bootstrap
 
-CMD [ "/bin/bash" ]
+CMD [ "cdk", "deploy" ]
