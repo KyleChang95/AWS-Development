@@ -16,8 +16,7 @@ export class EC2Stack extends cdk.Stack {
 
     // Setup Subnet Selection.
     const SubnetSelection: ec2.SubnetSelection = {
-      subnetType: ec2.SubnetType.PUBLIC,
-      availabilityZones: [awsRegion + 'a']
+      subnetType: ec2.SubnetType.PUBLIC
     };
 
     // Setup AMI MAP.
