@@ -37,6 +37,7 @@ export class EC2Stack extends cdk.Stack {
       { port: 22, name: 'SSH' },
       { port: 80, name: 'HTTP' },
       { port: 443, name: 'HTTPS' },
+      { port: 3389, name: 'RDP' },
     ].forEach((v) => {
       securityGroup.addIngressRule(
         ec2.Peer.ipv4('0.0.0.0/0'),
