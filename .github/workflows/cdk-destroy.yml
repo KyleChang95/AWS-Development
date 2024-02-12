@@ -1,0 +1,37 @@
+name: Destroy AWS CDK Stack
+
+on:
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18.x'
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  cdk-destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: cdk/package-lock.json
+    
+    - name: Install dependencies
+      run: |
+        cd cdk
+        npm install -g aws-cdk
+        npm install
+
+    - name: Destroy CDK stack
+      run: |
+        cd cdk
+        cdk bootstrap
+        cdk destroy --require-approval never
