@@ -14,7 +14,7 @@ const stack = new EC2Stack(app, 'createEc2Stack', {
   },
   tags: {
     vpcId: 'vpc-04da342fb999000d5',
-    amiId: 'ami-008fe2fc65df48dac',
+    amiId: 'ami-09a4692a2aaf5261a',
   }
 });
 
