@@ -76,6 +76,7 @@ export class EC2Stack extends cdk.Stack {
       securityGroup: securityGroup,
       // blockDevices: [volume],
       ssmSessionPermissions: true,
+      sourceDestCheck: false,
     });
 
     // Print instance public IP.
