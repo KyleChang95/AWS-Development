@@ -19,6 +19,8 @@ export class EC2Stack extends cdk.Stack {
       subnetType: ec2.SubnetType.PUBLIC
     };
 
+    const keyPair = ec2.KeyPair.fromKeyPairName(this, 'getKeyPair', 'ims-dev');
+
     // Setup AMI MAP.
     //  * Description  : Amazon Linux 2023 AMI 2023.1.20230906.1 x86_64 HVM kernel-6.1
     //  * Architecture : 64-bit (x86)
@@ -67,7 +69,7 @@ export class EC2Stack extends cdk.Stack {
       instanceName: stackName,
       machineImage: ec2.MachineImage.genericLinux(amiMap),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
-      keyName: 'ims-dev',
+      keyPair: keyPair,
       vpc: vpc,
       vpcSubnets: SubnetSelection,
       associatePublicIpAddress: true,
