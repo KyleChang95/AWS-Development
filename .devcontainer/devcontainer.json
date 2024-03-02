@@ -1,4 +1,5 @@
 {
+  "name": "AWS-Development",
   "image": "node:18",
   "features": {
     "ghcr.io/devcontainers/features/aws-cli:1": {},
@@ -13,5 +14,10 @@
         "GitHub.copilot-chat"
       ]
     }
+  },
+  "containerEnv": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "AWS_DEFAULT_OUTPUT": "json",
+    "INSTANCE_ID_OF_RUNNER": "i-07d3981274a7437e5"
   }
 }
