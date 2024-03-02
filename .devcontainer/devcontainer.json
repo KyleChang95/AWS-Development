@@ -8,15 +8,9 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "ryanluker.vscode-coverage-gutters",
-        "dbaeumer.vscode-eslint",
         "mhutchie.git-graph",
         "GitHub.copilot",
-        "GitHub.copilot-chat",
-        "GitHub.copilot-labs",
-        "ms-vscode.live-server",
-        "yzhang.markdown-all-in-one",
-        "alefragnani.project-manager"
+        "GitHub.copilot-chat"
       ]
     }
   }
