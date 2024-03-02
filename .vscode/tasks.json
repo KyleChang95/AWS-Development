@@ -1,0 +1,10 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Session Manager",
+      "type": "shell",
+      "command": "aws ssm start-session --target ${INSTANCE_ID_OF_RUNNER} --document-name 'AWS-StartInteractiveCommand' --parameters 'command=bash'"
+    }
+  ]
+}
